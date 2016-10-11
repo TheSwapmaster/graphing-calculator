@@ -111,12 +111,11 @@ class CalcBrain {
         var firstOperand: Double
     }
     
-    var formatter = NumberFormatter()
-    
     public func formatNumber(value: Double) -> String? {
 
         let formatter = NumberFormatter()
         formatter.maximumFractionDigits = 4
+        formatter.minimumFractionDigits = 0
         formatter.minimumIntegerDigits = 1
         
         if let retString = formatter.string(from: NSNumber(value: value )) {
@@ -158,7 +157,7 @@ class CalcBrain {
         accumulator = operand
         internalProgram.append(operand as CalcBrain.PropertyList)
         if(!isPartialResult) {
-            operationsTyped = formatter.string(from: NSNumber(value: accumulator))!
+            operationsTyped = formatNumber(value: accumulator)!
         }
 
     }
@@ -189,7 +188,7 @@ class CalcBrain {
                         textToAppend = String(operationsTyped.remove(at: operationsTyped.characters.index(before: operationsTyped.endIndex)))
                     }
                     else {
-                        textToAppend = formatter.string(from: NSNumber(value: accumulator))!
+                        textToAppend = formatNumber(value: accumulator)!
                     }
                     isConstant = true
                     if suffix{
@@ -203,7 +202,7 @@ class CalcBrain {
                     if operationsTyped != " "{
                         textToAppend = operationsTyped
                     } else {
-                        textToAppend = formatter.string(from: NSNumber(value: accumulator))!
+                        textToAppend = formatNumber(value: accumulator)!
                     }
                     if suffix{
                         operationsTyped = "(" + textToAppend + ")" + String(symbolToPrint)
@@ -241,7 +240,7 @@ class CalcBrain {
     fileprivate func execPendingBinaryOperation() {
         if isPending != nil {
             if(!isConstant && !isOperandVar) {
-                operationsTyped += formatter.string( from: NSNumber(value: accumulator))!
+                operationsTyped += formatNumber(value: accumulator)!
             }
             else {
                 isConstant = false

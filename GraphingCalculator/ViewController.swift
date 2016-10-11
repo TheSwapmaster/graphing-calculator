@@ -39,12 +39,7 @@ class CalculatorViewController: UIViewController {
     
     fileprivate var isUserTyping = false
     
-    fileprivate var brain = CalcBrain() {
-        didSet {
-            brain.formatter.maximumFractionDigits = 4
-            brain.formatter.minimumIntegerDigits = 1
-        }
-    }
+    fileprivate var brain = CalcBrain()
     
     fileprivate var displayValue : Double {
         
