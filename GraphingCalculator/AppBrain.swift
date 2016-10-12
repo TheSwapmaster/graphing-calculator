@@ -10,13 +10,13 @@ import Foundation
 
 class CalcBrain {
     
-    fileprivate var accumulator = 0.0
-    fileprivate var isConstant = false
+    private var accumulator = 0.0
+    private var isConstant = false
     
     typealias PropertyList = AnyObject
-    fileprivate var internalProgram = [PropertyList]()
+    private var internalProgram = [PropertyList]()
     
-    fileprivate var operations: Dictionary<String, Operation> = [
+    private var operations: Dictionary<String, Operation> = [
         
         "eˣ"    :Operation.unaryOperation( { pow(M_E, $0) }, "e^", false),
         "10ˣ"   :Operation.unaryOperation( { pow(10, $0) }, "10^", false),
@@ -33,7 +33,7 @@ class CalcBrain {
         "AC"    :Operation.clear,
         "1/x"   :Operation.unaryOperation( { 1/$0 } ,"⁻¹", true),
         "⁺⁄₋"   :Operation.unaryOperation( { -$0 } ,"-", false),
-        "%"     :Operation.binaryOperation( { $0.truncatingRemainder(dividingBy: $1) } ),
+        "%"     :Operation.binaryOperation( { $0%$1 } ),
         "×"     :Operation.binaryOperation( { $0 * $1 } ),
         "+"     :Operation.binaryOperation( { $0 + $1 } ),
         "-"     :Operation.binaryOperation( { $0 - $1 } ),
@@ -41,18 +41,18 @@ class CalcBrain {
         "="     :Operation.equals
     ]
     
-    fileprivate var variableValues: Dictionary<String, Double> = [:]
-    fileprivate var isOperandVar = false
+    private var variableValues: Dictionary<String, Double> = [:]
+    private var isOperandVar = false
     
-    func SetVariableValue(_ varName: String, varValue: Double) {
+    func SetVariableValue(varName: String, varValue: Double) {
         variableValues[varName] = varValue
     }
     
-    func GetVariableValue(_ varName: String) -> Double? {
+    func GetVariableValue(varName: String) -> Double? {
         return variableValues[varName]
     }
     
-    fileprivate enum Operation {
+    private enum Operation {
         
         case constant(Double)
         case unaryOperation((Double)->Double, String, Bool) // TRUE mean symbol suffixed, FALSE means prefixed
@@ -103,40 +103,40 @@ class CalcBrain {
         }
     }
     
-    fileprivate var operationsTyped:String = " "
+    private var operationsTyped:String = " "
     
-    fileprivate struct PendingBinaryOperation {
+    private struct PendingBinaryOperation {
         
         var binaryFunc: (Double, Double)->Double
         var firstOperand: Double
     }
     
-    public func formatNumber(value: Double) -> String? {
+    func formatNumber(value: Double) -> String? {
 
-        let formatter = NumberFormatter()
+        let formatter = NSNumberFormatter()
         formatter.maximumFractionDigits = 4
         formatter.minimumFractionDigits = 0
         formatter.minimumIntegerDigits = 1
-        
-        if let retString = formatter.string(from: NSNumber(value: value )) {
+
+        if let retString = formatter.stringFromNumber(NSNumber(double: value)) {
             return retString
         }
         return nil
     }
     
-    fileprivate var isPending: PendingBinaryOperation?
+    private var isPending: PendingBinaryOperation?
     
-    fileprivate var isPartialResult: Bool {
+    private var isPartialResult: Bool {
         get{
             return isPending != nil
         }
     }
     
-    fileprivate func ClearDescription() {
+    private func ClearDescription() {
         operationsTyped = " "
     }
     
-    func SetOperand(_ varName: String) {
+    func SetOperand(varName: String) {
         
         if variableValues[varName] == nil {
             SetVariableValue(varName, varValue: 0.0)
@@ -152,17 +152,17 @@ class CalcBrain {
         }
     }
     
-    func SetOperand(_ operand: Double) {
+    func SetOperand(operand: Double) {
         
         accumulator = operand
         internalProgram.append(operand as CalcBrain.PropertyList)
         if(!isPartialResult) {
-            operationsTyped = formatNumber(value: accumulator)!
+            operationsTyped = formatNumber(accumulator)!
         }
 
     }
     
-    func PerformOperation (_ symbol: String) {
+    func PerformOperation (symbol: String) {
         
         var textToAppend:String
         
@@ -185,10 +185,10 @@ class CalcBrain {
             case .unaryOperation(let function, let symbolToPrint, let suffix):
                 if(isPartialResult) {
                     if isConstant == true {
-                        textToAppend = String(operationsTyped.remove(at: operationsTyped.characters.index(before: operationsTyped.endIndex)))
+                        textToAppend = String(operationsTyped.removeAtIndex(operationsTyped.endIndex.predecessor()))
                     }
                     else {
-                        textToAppend = formatNumber(value: accumulator)!
+                        textToAppend = formatNumber(accumulator)!
                     }
                     isConstant = true
                     if suffix{
@@ -202,7 +202,7 @@ class CalcBrain {
                     if operationsTyped != " "{
                         textToAppend = operationsTyped
                     } else {
-                        textToAppend = formatNumber(value: accumulator)!
+                        textToAppend = formatNumber(accumulator)!
                     }
                     if suffix{
                         operationsTyped = "(" + textToAppend + ")" + String(symbolToPrint)
@@ -237,10 +237,10 @@ class CalcBrain {
         
     }
     
-    fileprivate func execPendingBinaryOperation() {
+    private func execPendingBinaryOperation() {
         if isPending != nil {
             if(!isConstant && !isOperandVar) {
-                operationsTyped += formatNumber(value: accumulator)!
+                operationsTyped += formatNumber(accumulator)!
             }
             else {
                 isConstant = false
@@ -252,7 +252,7 @@ class CalcBrain {
         }
     }
     
-    fileprivate func ResetCalculator() {
+    private func ResetCalculator() {
         isPending = nil
         accumulator = 0
         ClearDescription()

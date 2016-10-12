@@ -10,8 +10,8 @@ import UIKit
 
 @IBDesignable class GraphView: UIView {
 
-    fileprivate var axesDrawer = AxesDrawer(color: UIColor.black)   // black axes
-    fileprivate var color = UIColor.blue
+    private var axesDrawer = AxesDrawer(color: UIColor.blackColor())   // black axes
+    private var color = UIColor.blueColor()
     
     var originOffset: CGPoint = CGPoint(x: 0, y: 0) {
         didSet { setNeedsDisplay() }
@@ -24,10 +24,10 @@ import UIKit
         }
     }
     
-    func changeScale(_ recognizer: UIPinchGestureRecognizer) {
+    func changeScale(recognizer: UIPinchGestureRecognizer) {
         
         switch recognizer.state {
-        case .changed, .ended:
+        case .Changed, .Ended:
             scale = scale*recognizer.scale
             recognizer.scale = 1.0  // Reset scale to get relative scale next time we are in here
         default:
@@ -35,14 +35,14 @@ import UIKit
         }
     }
     
-    func moveGraph(_ recognizer: UIPanGestureRecognizer) {
+    func panGraph(recognizer: UIPanGestureRecognizer) {
         
         switch recognizer.state {
-        case .changed, .ended:
-            originOffset = CGPoint(x: originOffset.x + recognizer.translation(in: self).x,
-                                   y: originOffset.y + recognizer.translation(in: self).y)
+        case .Changed, .Ended:
+            originOffset = CGPoint(x: originOffset.x + recognizer.translationInView(self).x,
+                                   y: originOffset.y + recognizer.translationInView(self).y)
             
-            recognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)// Reset translation to get relative translation next time we are in here
+            recognizer.setTranslation(CGPoint(x: 0, y: 0), inView: self)// Reset translation to get relative translation next time we are in here
 
         default:
             break
@@ -50,7 +50,7 @@ import UIKit
     }
     
     // Code to draw custom graph view
-    override func draw(_ rect: CGRect) {
+    override func drawRect(_ rect: CGRect) {
         // Drawing code
         
         axesDrawer.drawAxesInRect(bounds,

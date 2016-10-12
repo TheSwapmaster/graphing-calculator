@@ -7,51 +7,31 @@
 //
 
 import UIKit
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-    switch (lhs, rhs) {
-    case let (l?, r?):
-        return l < r
-    case (nil, _?):
-        return true
-    default:
-        return false
-    }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-    switch (lhs, rhs) {
-    case let (l?, r?):
-        return l > r
-    default:
-        return rhs < lhs
-    }
-}
-
 
 class CalculatorViewController: UIViewController {
     
     
-    @IBOutlet fileprivate weak var display: UILabel!
+    @IBOutlet private weak var display: UILabel!
     
     @IBOutlet weak var history: UILabel!
     
     @IBOutlet weak var memoryReg: UILabel!
     
-    fileprivate var isUserTyping = false
+    private var isUserTyping = false
     
-    fileprivate var brain = CalcBrain()
+    private var brain = CalcBrain()
     
-    fileprivate var displayValue : Double {
+    private var displayValue : Double {
         
         get{
             return Double(display.text!)!
         }
         set {
-            display.text = brain.formatNumber(value: newValue)!
+            display.text = brain.formatNumber(newValue)!
         }
     }
     
-    @IBAction func touchDigit(_ sender: UIButton) {
+    @IBAction func touchDigit(sender: UIButton) {
         
         let digit = sender.currentTitle!
         
@@ -60,7 +40,7 @@ class CalculatorViewController: UIViewController {
         
         // Return if a decimal point has already been typed
         if digit == "." {
-            if display.text?.range(of: ".") != nil {return  // decimal already exists, return
+            if display.text?.rangeOfString(".") != nil {return  // decimal already exists, return
             } else { isUserTyping = true } // else, append decimal point at the end
         }
         
@@ -75,7 +55,7 @@ class CalculatorViewController: UIViewController {
         
     }
     
-    @IBAction func performOperation(_ sender: UIButton) {
+    @IBAction func performOperation(sender: UIButton) {
         
         var memValToPrint: String
         
@@ -92,7 +72,7 @@ class CalculatorViewController: UIViewController {
         history.text = brain.description
         
         if let memVal = brain.GetVariableValue("M") {
-            memValToPrint = brain.formatNumber(value: memVal)!
+            memValToPrint = brain.formatNumber(memVal)!
         }
         else {
             memValToPrint = String(0)
@@ -102,19 +82,19 @@ class CalculatorViewController: UIViewController {
         //
     }
     
-    @IBAction func SetMemory(_ sender: UIButton) {
+    @IBAction func SetMemory(sender: UIButton) {
         isUserTyping = false
         brain.SetVariableValue("M", varValue: displayValue)
         
         let programToUpdate = brain.program
         brain.program = programToUpdate
         
-        memoryReg.text = "M=" + brain.formatNumber(value: displayValue)!
+        memoryReg.text = "M=" + brain.formatNumber(displayValue)!
         displayValue = brain.result
         history.text = brain.description
     }
     
-    @IBAction func UpdateResultWithMemory(_ sender: UIButton) {
+    @IBAction func UpdateResultWithMemory(sender: UIButton) {
         brain.SetOperand("M")
     }
     
@@ -122,7 +102,7 @@ class CalculatorViewController: UIViewController {
     @IBAction func Backspace() {
         if isUserTyping {
             if display.text?.characters.count>0 {
-                display.text!.remove(at: display.text!.characters.index(before: display.text!.endIndex))
+                display.text!.removeAtIndex(display.text!.endIndex.predecessor())
             }
         } else {
             brain.UndoLast()

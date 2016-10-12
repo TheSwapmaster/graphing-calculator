@@ -21,15 +21,19 @@ class GraphViewController: UIViewController {
     }
     */
     
-    
     @IBOutlet weak var graphView: GraphView! {
-        
         didSet {
             graphView.addGestureRecognizer(UIPinchGestureRecognizer(target: graphView, action: #selector(graphView.changeScale(_:))))
             
-            graphView.addGestureRecognizer(UIPanGestureRecognizer(target: graphView, action: #selector(graphView.moveGraph(_:))))
+            graphView.addGestureRecognizer(UIPanGestureRecognizer(target: graphView, action: #selector(graphView.panGraph(_:))))
+            
+//            let doubleTapGestureRecognizer = UITapGestureRecognizer(target: graphView, action: #selector(graphView.resetOrigin(_:)))
+//            doubleTapGestureRecognizer.numberOfTapsRequired = 2
+//            
+//            graphView.addGestureRecognizer(doubleTapGestureRecognizer)
             
         }
     }
+    
 
 }
