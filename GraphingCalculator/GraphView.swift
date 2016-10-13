@@ -49,12 +49,27 @@ import UIKit
         }
     }
     
+    func resetOrigin(recognizer: UITapGestureRecognizer) {
+        
+        switch recognizer.state {
+        case .Ended:
+            
+            //let currentOrigin = CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y)
+
+            originOffset = CGPoint(x: recognizer.locationInView(self).x - bounds.midX, y: recognizer.locationInView(self).y - bounds.midY)
+//            originOffset = recognizer.locationOfTouch(1, inView: self)
+            
+        default:
+            break
+        }
+    }
+    
     // Code to draw custom graph view
-    override func drawRect(_ rect: CGRect) {
+    override func drawRect(rect: CGRect) {
         // Drawing code
         
         axesDrawer.drawAxesInRect(bounds,
-                                  origin: CGPoint(x: bounds.origin.x + originOffset.x, y: bounds.origin.y + originOffset.y),
+                                  origin: CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y),
                                   pointsPerUnit: scale )
     }
     
