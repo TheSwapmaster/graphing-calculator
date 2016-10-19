@@ -58,5 +58,19 @@ class GraphViewController: UIViewController {
         
     }
     
+    
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        
+        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+        
+        let sizeBeforeRotation = graphView.bounds.size
+
+        coordinator.animateAlongsideTransition(nil) { context in
+
+            self.graphView.originOffset.x *= self.graphView.bounds.size.width / sizeBeforeRotation.width
+            self.graphView.originOffset.y *= self.graphView.bounds.size.height / sizeBeforeRotation.height
+            
+        }
+    }
 
 }
