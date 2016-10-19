@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B51D6C0B1DB45A050090CDE6 /* GraphModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51D6C0A1DB45A050090CDE6 /* GraphModel.swift */; };
 		B5948D4C1DAC95B800E8D3A8 /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5948D4A1DAC95B800E8D3A8 /* GraphView.swift */; };
 		B5948D4D1DAC95B800E8D3A8 /* GraphViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5948D4B1DAC95B800E8D3A8 /* GraphViewController.swift */; };
 		B5B1C7AC1DAB502300EA00C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B1C7AB1DAB502300EA00C1 /* AppDelegate.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B51D6C0A1DB45A050090CDE6 /* GraphModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphModel.swift; sourceTree = "<group>"; };
 		B5948D4A1DAC95B800E8D3A8 /* GraphView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
 		B5948D4B1DAC95B800E8D3A8 /* GraphViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphViewController.swift; sourceTree = "<group>"; };
 		B5B1C7A81DAB502300EA00C1 /* GraphingCalculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GraphingCalculator.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,11 +68,12 @@
 			isa = PBXGroup;
 			children = (
 				B5B1C7AD1DAB502300EA00C1 /* ViewController.swift */,
+				B5B1C7BE1DAB513700EA00C1 /* AppBrain.swift */,
 				B5B1C7C01DAB515000EA00C1 /* Main.storyboard */,
 				B5948D4A1DAC95B800E8D3A8 /* GraphView.swift */,
+				B51D6C0A1DB45A050090CDE6 /* GraphModel.swift */,
 				B5948D4B1DAC95B800E8D3A8 /* GraphViewController.swift */,
 				B5F7C8641DAE1F4700753F33 /* AxesDrawer.swift */,
-				B5B1C7BE1DAB513700EA00C1 /* AppBrain.swift */,
 				B5B1C7AF1DAB502300EA00C1 /* Main.storyboard */,
 			);
 			path = GraphingCalculator;
@@ -164,6 +167,7 @@
 			files = (
 				B5B1C7AE1DAB502300EA00C1 /* ViewController.swift in Sources */,
 				B5948D4D1DAC95B800E8D3A8 /* GraphViewController.swift in Sources */,
+				B51D6C0B1DB45A050090CDE6 /* GraphModel.swift in Sources */,
 				B5B1C7AC1DAB502300EA00C1 /* AppDelegate.swift in Sources */,
 				B5B1C7BF1DAB513700EA00C1 /* AppBrain.swift in Sources */,
 				B5948D4C1DAC95B800E8D3A8 /* GraphView.swift in Sources */,

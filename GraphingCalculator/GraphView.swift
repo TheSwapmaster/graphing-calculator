@@ -8,18 +8,23 @@
 
 import UIKit
 
-@IBDesignable class GraphView: UIView {
+//@IBDesignable
+class GraphView: UIView {
 
     private var axesDrawer = AxesDrawer(color: UIColor.blackColor())   // black axes
     private var color = UIColor.blueColor()
+    
+    var getNextValFunc: ((Double) -> Double)?
     
     var originOffset: CGPoint = CGPoint(x: 0, y: 0) {
         didSet { setNeedsDisplay() }
     }
     
-    @IBInspectable var scale: CGFloat = 1.0 {
+    @IBInspectable var scale: CGFloat = 100.0 {
         didSet {
-            if scale < 0.1 { scale = 0.1 }
+            
+            scale = max(0.1, min(200, scale))
+//            print("Scale is \(scale)")
             setNeedsDisplay()
         }
     }
@@ -53,25 +58,102 @@ import UIKit
         
         switch recognizer.state {
         case .Ended:
-            
-            //let currentOrigin = CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y)
-
             originOffset = CGPoint(x: recognizer.locationInView(self).x - bounds.midX, y: recognizer.locationInView(self).y - bounds.midY)
-//            originOffset = recognizer.locationOfTouch(1, inView: self)
             
         default:
             break
         }
     }
     
+    
     // Code to draw custom graph view
     override func drawRect(rect: CGRect) {
         // Drawing code
+//        print("bounds.height = \(bounds.height) bounds.width = \(bounds.width)")
+//        print("origin = \(CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y))")
+//        print("bounds.minX = \(bounds.minX) bounds.maxX = \(bounds.maxX)")
         
+        axesDrawer.contentScaleFactor = self.contentScaleFactor
+        let origin = CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y)
+                
         axesDrawer.drawAxesInRect(bounds,
-                                  origin: CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y),
+                                  origin: origin,
                                   pointsPerUnit: scale )
+        
+        drawGraphInRect(bounds, origin: origin, pointsPerUnit: scale)
     }
     
+    
+    private func drawGraphInRect(bounds: CGRect, origin: CGPoint, pointsPerUnit: CGFloat) {
+        
+        var yValue: Double
+        var xValue: Double
+        var yPoint: CGFloat
+        
+        var previousPoint: CGPoint? = nil
+        var currentPoint: CGPoint?
+        
+        let path = UIBezierPath()
+        color.set()
+        
+        for xPoint in (bounds.minX).stride(to: bounds.maxX, by: 1.0) {
+            //print(" X = \(getXValForPoint(x, bounds: bounds, origin: origin)) for point \(x)")
+            
+            xValue = getXValForPoint(xPoint, bounds: bounds, origin: origin)
+            
+            yValue = getNextValFunc!(xValue)
+            
+            // TODO: continue here.
+            yPoint = getPointForYVal(yValue, bounds: bounds, origin: origin)
+            
+            currentPoint = CGPoint(x: xPoint, y: yPoint)
+            
+            if !CGRectContainsPoint(bounds, CGPoint(x: xPoint, y: yPoint)) {
+                currentPoint = nil
+            } else {
+                if previousPoint != nil {
+                    
+                    path.moveToPoint(previousPoint!)
+                    path.addLineToPoint(currentPoint!)
+                }
+            }
+            
+            previousPoint = currentPoint
+            
+//            print("y = \(yValue) for x = \(xValue). yPoint = \(yPoint)")
+        }
+        path.stroke()
+
+    }
+    
+    
+    private func getXValForPoint(x: CGFloat, bounds: CGRect, origin: CGPoint) -> Double {
+        
+        return Double((x - origin.x)/scale)
+    }
+    
+    private func getPointForYVal(y: Double, bounds: CGRect, origin: CGPoint) -> CGFloat {
+        
+        return origin.y - CGFloat(y)*scale
+    }
+    
+    // we want the axes and hashmarks to be exactly on pixel boundaries so they look sharp
+    // setting contentScaleFactor properly will enable us to put things on the closest pixel boundary
+    // if contentScaleFactor is left to its default (1), then things will be on the nearest "point" boundary instead
+    // the lines will still be sharp in that case, but might be a pixel (or more theoretically) off of where they should be
+    
+    private func alignedPoint(x x: CGFloat, y: CGFloat, insideBounds: CGRect? = nil) -> CGPoint?
+    {
+        let point = CGPoint(x: align(x), y: align(y))
+        if let permissibleBounds = insideBounds where !CGRectContainsPoint(permissibleBounds, point) {
+            return nil
+        }
+        return point
+    }
+    
+    private func align(coordinate: CGFloat) -> CGFloat {
+        return round(coordinate * contentScaleFactor) / contentScaleFactor
+    }
+
 
 }

@@ -21,6 +21,8 @@ class CalculatorViewController: UIViewController {
     
     private var brain = CalcBrain()
     
+    private let memReg = "M"
+    
     private var displayValue : Double {
         
         get{
@@ -71,7 +73,7 @@ class CalculatorViewController: UIViewController {
         displayValue = brain.result
         history.text = brain.description
         
-        if let memVal = brain.GetVariableValue("M") {
+        if let memVal = brain.GetVariableValue(memReg) {
             memValToPrint = brain.formatNumber(memVal)!
         }
         else {
@@ -94,10 +96,28 @@ class CalculatorViewController: UIViewController {
         history.text = brain.description
     }
     
-    @IBAction func UpdateResultWithMemory(sender: UIButton) {
-        brain.SetOperand("M")
+    @IBAction func UseMemoryAsOperand() {
+        brain.SetOperand(memReg)
     }
     
+    func GetResultForValue(value: Double, equation: CalcBrain.PropertyList) -> Double {
+        //isUserTyping = false
+        
+        let origMemVal  = brain.GetVariableValue(memReg) // save original
+        let origProg    = brain.program   // get resut for new value
+        
+        brain.SetVariableValue(memReg, varValue: value) // update to new value
+        brain.program = equation
+        
+        defer { // restore original
+            brain.SetVariableValue(memReg, varValue: origMemVal ?? 0.0)
+            brain.program = origProg
+        }
+        
+        let result = brain.result
+        return result
+    }
+
     
     @IBAction func Backspace() {
         if isUserTyping {
@@ -114,6 +134,41 @@ class CalculatorViewController: UIViewController {
             displayValue = brain.result
             isUserTyping = false
         }
+    }
+    
+    
+    // MARK: - Navigation
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+     
+    var destinationVC = segue.destinationViewController
+        
+        if let navcon = destinationVC as? UINavigationController {
+            destinationVC = navcon.visibleViewController ?? destinationVC
+        }
+        if let graphVC = destinationVC as? GraphViewController {
+            
+            if segue.identifier == "showGraph" {
+                
+                graphVC.graphInfo = GraphInfo(xyEquation: brain.program, getValFunc: self.GetResultForValue)
+                graphVC.navigationItem.title = history.text!    // equation being graphed
+            }
+            
+        }
+    }
+    
+    
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        
+        if identifier == "showGraph" && brain.isPartialResult {
+            self.navigationItem.title = "Cannot graph incomplete equation..."
+            return false
+        }
+        
+        self.navigationItem.title = " "
+        return true
     }
     
     

@@ -10,19 +10,19 @@ import UIKit
 
 class GraphViewController: UIViewController {
 
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    var graphInfo = GraphInfo(xyEquation: nil, getValFunc: nil) {
+        
+        didSet {
+            updateGraph()
+        }
     }
-    */
+    
+    
     
     @IBOutlet weak var graphView: GraphView! {
         didSet {
+            graphView.getNextValFunc = self.getResultForValue
+            
             graphView.addGestureRecognizer(UIPinchGestureRecognizer(target: graphView, action: #selector(graphView.changeScale(_:))))
             
             graphView.addGestureRecognizer(UIPanGestureRecognizer(target: graphView, action: #selector(graphView.panGraph(_:))))
@@ -32,7 +32,30 @@ class GraphViewController: UIViewController {
             
             graphView.addGestureRecognizer(doubleTapGestureRecognizer)
             
+            updateGraph()
+            
         }
+    }
+    
+    
+    func getResultForValue(value: Double) -> Double {
+        
+        guard (graphInfo.getValFunc != nil && graphInfo.xyEquation != nil) else {
+            return 0.0
+        }
+        return graphInfo.getValFunc!(value, graphInfo.xyEquation!)
+    
+    }
+    
+    
+    // Function to udate Graph View
+    func updateGraph() {
+        
+        if graphView != nil {
+            
+            graphView.originOffset = CGPoint(x: 0, y: 0) // Setting this variable in graphView calls SetNeedsDisplay
+        }
+        
     }
     
 

@@ -126,7 +126,7 @@ class CalcBrain {
     
     private var isPending: PendingBinaryOperation?
     
-    private var isPartialResult: Bool {
+    var isPartialResult: Bool {
         get{
             return isPending != nil
         }

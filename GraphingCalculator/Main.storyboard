@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="VPM-iA-aeC">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="VPM-iA-aeC">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
@@ -7,7 +7,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Calculator-->
+        <!--Calculator View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="CalculatorViewController" customModule="GraphingCalculator" customModuleProvider="target" sceneMemberID="viewController">
@@ -16,7 +16,7 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Ban-tg-pco">
@@ -62,7 +62,7 @@
                                                                     <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 </state>
                                                                 <connections>
-                                                                    <action selector="UpdateResultWithMemory:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ukI-Hm-eAR"/>
+                                                                    <action selector="UseMemoryAsOperand" destination="BYZ-38-t0r" eventType="touchUpInside" id="aKB-CG-4cj"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hRY-PZ-Qur">
@@ -493,7 +493,7 @@
                             <constraint firstItem="Ban-tg-pco" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="ge2-7z-EWT"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Calculator" id="iJG-EF-tQe"/>
+                    <navigationItem key="navigationItem" id="iJG-EF-tQe"/>
                     <connections>
                         <outlet property="display" destination="LqU-f6-b0m" id="i6c-u6-EGx"/>
                         <outlet property="history" destination="hGX-co-Csg" id="fn5-dF-geI"/>
@@ -517,7 +517,7 @@
             </objects>
             <point key="canvasLocation" x="-805" y="-72"/>
         </scene>
-        <!--Graph View-->
+        <!--Graph View Controller-->
         <scene sceneID="0DJ-5x-Axq">
             <objects>
                 <viewController id="YX2-Cr-KDV" customClass="GraphViewController" customModule="GraphingCalculator" customModuleProvider="target" sceneMemberID="viewController">
@@ -526,38 +526,52 @@
                         <viewControllerLayoutGuide type="bottom" id="Wog-kj-efV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="VL3-yg-Rvu">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="ejF-uS-IxR" customClass="GraphView" customModule="GraphingCalculator" customModuleProvider="target">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="scale">
+                                        <real key="value" value="100"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="graphContentScaleFactor">
+                                        <real key="value" value="0.80000000000000004"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.21230093799999999" green="0.21230093799999999" blue="0.21230093799999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="ejF-uS-IxR" firstAttribute="top" secondItem="VL3-yg-Rvu" secondAttribute="top" id="Htb-xZ-qbX"/>
-                            <constraint firstAttribute="trailing" secondItem="ejF-uS-IxR" secondAttribute="trailing" id="Sfq-lA-iZ2"/>
-                            <constraint firstItem="ejF-uS-IxR" firstAttribute="bottom" secondItem="Wog-kj-efV" secondAttribute="top" constant="8" symbolic="YES" id="sgc-dd-cRM"/>
-                            <constraint firstItem="ejF-uS-IxR" firstAttribute="leading" secondItem="VL3-yg-Rvu" secondAttribute="leading" id="wYS-Cr-F35"/>
+                            <constraint firstAttribute="trailing" secondItem="ejF-uS-IxR" secondAttribute="trailing" id="LQ3-nP-Om6"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="ejF-uS-IxR" secondAttribute="bottom" constant="-8" id="TII-HI-wFm"/>
+                            <constraint firstItem="ejF-uS-IxR" firstAttribute="top" secondItem="Fg2-Pi-5ba" secondAttribute="bottom" id="a8D-hO-mqx"/>
+                            <constraint firstItem="ejF-uS-IxR" firstAttribute="leading" secondItem="VL3-yg-Rvu" secondAttribute="leading" id="odc-lD-dBc"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Graph View" id="LxQ-kW-cn4"/>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <navigationItem key="navigationItem" id="LxQ-kW-cn4"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="graphView" destination="ejF-uS-IxR" id="1sP-Xd-Xco"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I5l-BK-bxu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1608.8" y="503.29835082458777"/>
+            <point key="canvasLocation" x="1465" y="340"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="8Ck-mv-Xax">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="zr3-KM-fII" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="C5S-6c-1gA">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="C5S-6c-1gA">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.21230093799999999" green="0.21230093799999999" blue="0.21230093799999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -576,15 +590,24 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZEQ-Ir-u1R">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.21230093799999999" green="0.21230093799999999" blue="0.21230093799999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="4od-v3-xdG">
+                        <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </toolbar>
                     <connections>
                         <segue destination="YX2-Cr-KDV" kind="relationship" relationship="rootViewController" id="Ueq-PE-PFn"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vVU-g5-8Mi" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="669.60000000000002" y="503.29835082458777"/>
+            <point key="canvasLocation" x="526" y="340"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
