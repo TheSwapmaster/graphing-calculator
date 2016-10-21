@@ -10,13 +10,20 @@ import UIKit
 
 //@IBDesignable
 class GraphView: UIView {
-
+    
     private var axesDrawer = AxesDrawer(color: UIColor.blackColor())   // black axes
     private var color = UIColor.blueColor()
     
+    private var isAnimationInProgress = false {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    
+    
     var getNextValFunc: ((Double) -> Double)?
     
-    var originOffset: CGPoint = CGPoint(x: 0, y: 0) {
+    var originOffset: CGPoint = CGPoint(x: 0, y: 0) { // offset relative to center of graphView
         didSet { setNeedsDisplay() }
     }
     
@@ -24,7 +31,7 @@ class GraphView: UIView {
         didSet {
             
             scale = max(0.1, min(200, scale))
-//            print("Scale is \(scale)")
+            //            print("Scale is \(scale)")
             setNeedsDisplay()
         }
     }
@@ -32,23 +39,90 @@ class GraphView: UIView {
     func changeScale(recognizer: UIPinchGestureRecognizer) {
         
         switch recognizer.state {
-        case .Changed, .Ended:
-            scale = scale*recognizer.scale
+            
+            //        case .Changed:
+            //            isAnimationInProgress = true
+            //
+            //            scale = scale*recognizer.scale
+            //            recognizer.scale = 1.0  // Reset scale to get relative scale next time we are in here
+            //
+            //        case .Ended:
+            //            isAnimationInProgress = false
+            
+        case .Began:
+            snapshot = snapshotViewAfterScreenUpdates(true)
+            snapshot?.alpha = 0.8
+            isAnimationInProgress = true
+            self.addSubview(snapshot!)
+            
+        case .Changed:
+            
+            let oldScale = snapshot!.frame.size.width / self.frame.size.width
+
+            snapshot?.frame.size.width  *= recognizer.scale
+            snapshot?.frame.size.height *= recognizer.scale
+
+            let newScale = snapshot!.frame.size.width / self.frame.size.width
+            let scaleChange = newScale - oldScale
+            
+            let offsetFromOrigin = CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y)
+            let newOffsetFromOrigin = CGPoint(x: -offsetFromOrigin.x * scaleChange, y: -offsetFromOrigin.y * scaleChange )
+            
+            snapshot!.center = CGPoint(x: snapshot!.center.x + newOffsetFromOrigin.x,
+                                       y: snapshot!.center.y + newOffsetFromOrigin.y)
+            
             recognizer.scale = 1.0  // Reset scale to get relative scale next time we are in here
+            
+        case .Ended:
+            let changedScale = snapshot!.frame.size.width / self.frame.size.width
+            
+            scale *= changedScale
+            snapshot!.removeFromSuperview()
+            snapshot = nil
+            isAnimationInProgress = false
+            
         default:
             break
         }
     }
     
+    private var snapshot: UIView?
+    private var panSinceLastRefresh:CGPoint?
+    
     func panGraph(recognizer: UIPanGestureRecognizer) {
         
         switch recognizer.state {
-        case .Changed, .Ended:
-            originOffset = CGPoint(x: originOffset.x + recognizer.translationInView(self).x,
-                                   y: originOffset.y + recognizer.translationInView(self).y)
+            //        case .Changed:
+            //            isAnimationInProgress = true
+            //
+            //            originOffset = CGPoint(x: originOffset.x + recognizer.translationInView(self).x,
+            //                                   y: originOffset.y + recognizer.translationInView(self).y)
+            //
+            //            recognizer.setTranslation(CGPoint(x: 0, y: 0), inView: self)// Reset translation to get relative translation next time we are in here
+            //
+            //        case .Ended:
+            //            isAnimationInProgress = false
             
+            
+        case .Began:
+            snapshot = snapshotViewAfterScreenUpdates(true)
+            snapshot!.alpha = 0.8
+            self.addSubview(snapshot!)
+            panSinceLastRefresh = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+            isAnimationInProgress = true
+            
+        case .Changed:
+            snapshot?.center.x += recognizer.translationInView(self).x
+            snapshot?.center.y += recognizer.translationInView(self).y
             recognizer.setTranslation(CGPoint(x: 0, y: 0), inView: self)// Reset translation to get relative translation next time we are in here
-
+            
+        case .Ended, .Cancelled:
+            originOffset =  CGPoint(x: snapshot!.center.x - bounds.midX + originOffset.x,
+                                    y: snapshot!.center.y - bounds.midY + originOffset.y)
+            snapshot?.removeFromSuperview()
+            snapshot = nil
+            isAnimationInProgress = false
+            
         default:
             break
         }
@@ -69,18 +143,23 @@ class GraphView: UIView {
     // Code to draw custom graph view
     override func drawRect(rect: CGRect) {
         // Drawing code
-//        print("bounds.height = \(bounds.height) bounds.width = \(bounds.width)")
-//        print("origin = \(CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y))")
-//        print("bounds.minX = \(bounds.minX) bounds.maxX = \(bounds.maxX)")
+        //        print("bounds.height = \(bounds.height) bounds.width = \(bounds.width)")
+        //        print("origin = \(CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y))")
+        //        print("bounds.minX = \(bounds.minX) bounds.maxX = \(bounds.maxX)")
         
-        axesDrawer.contentScaleFactor = self.contentScaleFactor
-        let origin = CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y)
-                
-        axesDrawer.drawAxesInRect(bounds,
-                                  origin: origin,
-                                  pointsPerUnit: scale )
-        
-        drawGraphInRect(bounds, origin: origin, pointsPerUnit: scale)
+        if !isAnimationInProgress {
+            
+            
+            axesDrawer.contentScaleFactor = self.contentScaleFactor
+            
+            let origin = CGPoint(x: bounds.midX + originOffset.x, y: bounds.midY + originOffset.y)
+            
+            axesDrawer.drawAxesInRect(bounds,
+                                      origin: origin,
+                                      pointsPerUnit: scale )
+            
+            drawGraphInRect(bounds, origin: origin, pointsPerUnit: scale)
+        }
     }
     
     
@@ -96,7 +175,9 @@ class GraphView: UIView {
         let path = UIBezierPath()
         color.set()
         
-        for xPoint in (bounds.minX).stride(to: bounds.maxX, by: 1.0) {
+        let stepSize: CGFloat = isAnimationInProgress == true ? 5.0 : 1.0 // Animation is expensive. Skip 5 points on x axis when animating.
+        
+        for xPoint in (bounds.minX).stride(to: bounds.maxX, by: stepSize) {
             //print(" X = \(getXValForPoint(x, bounds: bounds, origin: origin)) for point \(x)")
             
             xValue = getXValForPoint(xPoint, bounds: bounds, origin: origin)
@@ -120,10 +201,10 @@ class GraphView: UIView {
             
             previousPoint = currentPoint
             
-//            print("y = \(yValue) for x = \(xValue). yPoint = \(yPoint)")
+            //            print("y = \(yValue) for x = \(xValue). yPoint = \(yPoint)")
         }
         path.stroke()
-
+        
     }
     
     
@@ -154,6 +235,6 @@ class GraphView: UIView {
     private func align(coordinate: CGFloat) -> CGFloat {
         return round(coordinate * contentScaleFactor) / contentScaleFactor
     }
-
-
+    
+    
 }
