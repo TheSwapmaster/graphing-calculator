@@ -8,7 +8,7 @@
 
 import UIKit
 
-//@IBDesignable
+@IBDesignable
 class GraphView: UIView {
     
     private var axesDrawer = AxesDrawer(color: UIColor.blackColor())   // black axes
