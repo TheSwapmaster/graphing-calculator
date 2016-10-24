@@ -117,7 +117,7 @@ class CalculatorViewController: UIViewController {
         let result = brain.result
         return result
     }
-
+    
     
     @IBAction func Backspace() {
         if isUserTyping {
@@ -141,8 +141,10 @@ class CalculatorViewController: UIViewController {
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     
-    var destinationVC = segue.destinationViewController
+        
+        print ("Preparing for segue")
+        
+        var destinationVC = segue.destinationViewController
         
         if let navcon = destinationVC as? UINavigationController {
             destinationVC = navcon.visibleViewController ?? destinationVC
@@ -150,6 +152,8 @@ class CalculatorViewController: UIViewController {
         if let graphVC = destinationVC as? GraphViewController {
             
             if segue.identifier == "showGraph" {
+                
+                calcViewControllerDefaults.program = brain.program  // store program to defaults
                 
                 graphVC.graphInfo = GraphInfo(xyEquation: brain.program, getValFunc: self.GetResultForValue)
                 graphVC.navigationItem.title = history.text!    // equation being graphed
@@ -169,6 +173,37 @@ class CalculatorViewController: UIViewController {
         
         self.navigationItem.title = " "
         return true
+    }
+    
+    private struct CalculatorViewControllerDefaults {
+        
+        private var defaults = NSUserDefaults.standardUserDefaults()
+        private var programKey = "CalcViewController.Program"
+        
+        var program: AnyObject? {
+            set{
+                defaults.setObject(newValue, forKey: programKey)
+                defaults.synchronize()
+            }
+            get {
+                return defaults.objectForKey(programKey)
+            }
+        }
+    }
+    
+    private var calcViewControllerDefaults = CalculatorViewControllerDefaults()
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        if let defaultProgram = calcViewControllerDefaults.program {
+            self.displayValue = 0.0
+            self.SetMemory(UIButton())
+            self.brain.program = defaultProgram
+            performSegueWithIdentifier("showGraph", sender: nil)
+        }
+        
     }
     
     

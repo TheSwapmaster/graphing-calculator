@@ -21,6 +21,7 @@ class GraphViewController: UIViewController {
         var scale: CGFloat {
             set {
                 defaults.setObject(newValue, forKey: scaleKey)
+                defaults.synchronize()
             }
             get {
                 return defaults.objectForKey(scaleKey) as? CGFloat ?? 100.0
@@ -30,6 +31,7 @@ class GraphViewController: UIViewController {
         var originOffset: CGPoint { // offset relative to center of graphView
             set{
                 defaults.setObject([newValue.x, newValue.y] , forKey: originOffsetKey)
+                defaults.synchronize()
             }
             get {
                 if let originOffsetArray = defaults.objectForKey(originOffsetKey) as? [CGFloat] {
@@ -49,7 +51,6 @@ class GraphViewController: UIViewController {
             updateGraph()
         }
     }
-    
     
     
     @IBOutlet weak var graphView: GraphView! {
@@ -139,5 +140,4 @@ class GraphViewController: UIViewController {
             
         }
     }
-    
 }
