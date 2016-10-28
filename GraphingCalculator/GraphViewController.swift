@@ -140,4 +140,19 @@ class GraphViewController: UIViewController {
             
         }
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        numGraphViews += 1
+        print("Created graph view: \(numGraphViews)")
+    }
+    
+    deinit {
+        numGraphViews -= 1
+        print("Graph VC left the heap: \(numGraphViews)")
+    }
+    
 }
+
+var numGraphViews = 0
